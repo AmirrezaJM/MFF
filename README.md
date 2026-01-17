@@ -289,97 +289,65 @@ new ModuleFederationPlugin({
 
 ---
 
-## 🔮 Future Plans: Vite Integration
+## ⚡ Vite Implementation (Branch: `vite`)
 
-We're planning to expand this project to support **Vite** as an alternative to Webpack, enabling:
+We have expanded the project to include a complete Vite-based Micro Frontend system with **Vue + React** interoperability.
 
-- ⚡ **Faster Development** - Vite's native ES modules for instant HMR
-- 🎨 **Multi-Framework Support** - Vue + React micro frontends
-- 📦 **Modern Build System** - Leveraging Rollup for production builds
+> **Note**: This implementation works best when using the `vite` branch.
 
-### Planned Architecture
+### 🏗 Architecture
 
 ```
 MFF/
-├── webpack/                  # Current Webpack-based implementations
-│   ├── react-app1/
-│   └── react-app2/
+├── vite-app2/               # 👑 MAIN HOST (React + Vite) (Port 5002)
+│   ├── The central shell application
+│   ├── Supports Microfrontends (React & Vue)
+│   ├── Consumes: vite-app1/Button
+│   └── Consumes: vue-remote/Accordion
 │
-├── vite/                     # ⭐ Future Vite-based implementations
-│   ├── react-host/          # React Host Application (Vite)
-│   ├── react-remote/        # React Remote Application (Vite)
-│   ├── vue-remote/          # Vue Remote Application (Vite)
-│   └── shared/              # Shared utilities
+├── vite-app1/               # React Remote (Port 5001)
+│   └── Exposes: Button component
 │
-└── README.md
+└── vue-remote/              # Vue Remote (Port 5005)
+    └── Exposes: Accordion component
+    └── Note: Developed in Vue.js, consumed by React Host
 ```
 
-### Vite Module Federation Plugin
+### 🚀 Creating the Final Result
 
-For Vite, we'll use the `@originjs/vite-plugin-federation` plugin:
+To see the fully integrated system, you must **build** and **preview** all applications. Vite Federation requires the production build to serve remote assets correctly.
 
-```javascript
-// vite.config.js (Remote)
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import federation from '@originjs/vite-plugin-federation';
-
-export default defineConfig({
-    plugins: [
-        react(),
-        federation({
-            name: 'react-remote',
-            filename: 'remoteEntry.js',
-            exposes: {
-                './Button': './src/components/Button.jsx',
-            },
-            shared: ['react', 'react-dom'],
-        }),
-    ],
-    build: {
-        target: 'esnext',
-    },
-});
+**1. Start React Remote (vite-app1)**
+```bash
+cd vite-app1
+npm install
+npm run build
+npm run preview -- --port 5001
 ```
 
-```javascript
-// vite.config.js (Host)
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import federation from '@originjs/vite-plugin-federation';
-
-export default defineConfig({
-    plugins: [
-        react(),
-        federation({
-            name: 'react-host',
-            remotes: {
-                reactRemote: 'http://localhost:5001/assets/remoteEntry.js',
-                vueRemote: 'http://localhost:5002/assets/remoteEntry.js',
-            },
-            shared: ['react', 'react-dom'],
-        }),
-    ],
-});
+**2. Start Vue Remote (vue-remote)**
+```bash
+cd vue-remote
+npm install
+npm run build
+npm run preview -- --port 5005
 ```
 
-### Vue + React Interoperability
-
-With Vite, you can mix frameworks:
-
-```javascript
-// In React Host, consuming Vue component
-const VueWidget = React.lazy(() => import('vueRemote/Widget'));
-
-// Wrapper for Vue component in React
-function VueInReact() {
-    return (
-        <React.Suspense fallback="Loading Vue Widget...">
-            <VueWidget />
-        </React.Suspense>
-    );
-}
+**3. Start Main Host (vite-app2)**
+```bash
+cd vite-app2
+npm install
+npm run build
+npm run preview -- --port 5002
 ```
+
+👉 **Final Result**: Open [http://localhost:5002](http://localhost:5002) to see the React Host rendering both the local React components, the remote React Button, and the remote Vue Accordion.
+
+### Key Features
+- **Central Host (`vite-app2`)**: The main application orchestration point.
+- **Cross-Framework**: React Host rendering Vue components natively.
+- **CSS Injection**: Vue styles automatically injected into React Host.
+- **Type Safety**: React Props passed seamlessly to Vue.
 
 ---
 
