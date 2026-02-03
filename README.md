@@ -1,6 +1,6 @@
-# 🧩 Micro Frontend Federation (MFF)
+# 🧩 Micro Frontend
 
-A demonstration project showcasing **Micro Frontend Architecture** using **Webpack Module Federation**. This project demonstrates how to build, share, and consume components across multiple independent React applications at runtime.
+A demonstration project showcasing **Micro Frontend Architecture** using **Webpack Module Federation** and **vite**. This project demonstrates how to build, share, and consume components across multiple independent React applications at runtime.
 
 ![React](https://img.shields.io/badge/React-19.2-61DAFB?logo=react&logoColor=white)
 ![Webpack](https://img.shields.io/badge/Webpack-5-8DD6F9?logo=webpack&logoColor=white)
